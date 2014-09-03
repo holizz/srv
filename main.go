@@ -5,9 +5,10 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
+
+	"github.com/GeertJohan/go.rice"
 )
 
 func main() {
@@ -31,12 +32,14 @@ type SrvServer struct {
 }
 
 func NewSrvServer(dir http.Dir) SrvServer {
-	html, err := ioutil.ReadFile("assets/index.html")
+	assets := rice.MustFindBox("assets")
+
+	html, err := assets.String("index.html")
 	if err != nil {
 		panic(err)
 	}
 
-	js, err := ioutil.ReadFile("assets/app.js")
+	js, err := assets.String("app.js")
 	if err != nil {
 		panic(err)
 	}
