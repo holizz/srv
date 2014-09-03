@@ -6,7 +6,7 @@
   <body ng-controller="DirectoryListing">
     <ul>
       <li ng-repeat="file in files">
-        {{file.path}}
+        <a href="{{path}}{{file.path}}">{{file.path}}</a>
       </li>
     </ul>
 
