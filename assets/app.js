@@ -8,11 +8,16 @@ directory.controller('DirectoryListing', function ($scope, $http) {
 
     $scope.files = []
 
-    $http.get('/_srv/api?path='+encodeURI($scope.path))
-        .success(function (data) {
-            $scope.files = data
-        })
-        .error(function () {
-            alert("oh no")
-        })
+    var socket = new WebSocket('ws://'+document.location.host+'/_srv/api')
+
+    // Send the path
+    socket.onopen = function () {
+        socket.send($scope.path)
+    }
+
+    // Listen for updates
+    socket.onmessage = function (event) {
+        $scope.files = JSON.parse(event.data)
+        $scope.$apply()
+    }
 })
