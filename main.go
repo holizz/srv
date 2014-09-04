@@ -12,6 +12,7 @@ import (
 	"code.google.com/p/go.net/websocket"
 
 	"github.com/GeertJohan/go.rice"
+	"github.com/dustin/go-humanize"
 	"gopkg.in/fsnotify.v1"
 )
 
@@ -29,6 +30,8 @@ func main() {
 
 type File struct {
 	Path string `json:"path"`
+	Size string `json:"size"`
+	Dir  bool   `json:"dir"`
 }
 
 type ByPath []File
@@ -152,6 +155,8 @@ func (s SrvServer) writeDirectory(w io.Writer, path string) {
 	for _, f := range files {
 		outputFiles = append(outputFiles, File{
 			Path: f.Name(),
+			Size: humanize.IBytes(uint64(f.Size())),
+			Dir:  f.IsDir(),
 		})
 	}
 

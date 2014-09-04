@@ -7,6 +7,11 @@
     <ul>
       <li ng-repeat="file in files">
         <a href="{{path}}{{file.path}}">{{file.path}}</a>
+        <span ng-switch on="file.dir">
+          <span ng-switch-when="false">
+            ({{file.size}})
+          </span>
+        </span>
       </li>
     </ul>
 
