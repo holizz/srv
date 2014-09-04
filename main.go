@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"sort"
 
 	"code.google.com/p/go.net/websocket"
 
@@ -29,6 +30,12 @@ func main() {
 type File struct {
 	Path string `json:"path"`
 }
+
+type ByPath []File
+
+func (b ByPath) Len() int           { return len(b) }
+func (b ByPath) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
+func (b ByPath) Less(i, j int) bool { return b[i].Path < b[j].Path }
 
 type SrvServer struct {
 	dir        http.Dir
@@ -147,6 +154,8 @@ func (s SrvServer) writeDirectory(w io.Writer, path string) {
 			Path: f.Name(),
 		})
 	}
+
+	sort.Sort(ByPath(outputFiles))
 
 	bytes, err := json.Marshal(outputFiles)
 	if err != nil {
