@@ -11,6 +11,7 @@ import (
 	"code.google.com/p/go.net/websocket"
 
 	"github.com/GeertJohan/go.rice"
+	"gopkg.in/fsnotify.v1"
 )
 
 func main() {
@@ -90,8 +91,36 @@ func (s SrvServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s SrvServer) wsHandler(ws *websocket.Conn) {
+	// Wait for the path
 	var path string
 	fmt.Fscan(ws, &s)
+
+	// Send dir
+	s.writeDirectory(ws, path)
+
+	// Send dir whenever a file is modified
+	watcher, err := fsnotify.NewWatcher()
+	if err != nil {
+		panic(err)
+	}
+	defer watcher.Close()
+
+	err = watcher.Add(path)
+	if err != nil {
+		panic(err)
+	}
+
+	for {
+		select {
+		case <-watcher.Events:
+			s.writeDirectory(ws, path)
+		case err := <-watcher.Errors:
+			panic(err)
+		}
+	}
+}
+
+func (s SrvServer) writeDirectory(w io.Writer, path string) {
 	file, err := s.dir.Open(path)
 	if err != nil {
 		panic(err)
@@ -124,6 +153,8 @@ func (s SrvServer) wsHandler(ws *websocket.Conn) {
 		panic(err)
 	}
 
-	io.WriteString(ws, string(bytes))
-	return
+	_, err = io.WriteString(w, string(bytes))
+	if err != nil {
+		panic(err)
+	}
 }
