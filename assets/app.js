@@ -12,7 +12,7 @@ directory.controller('DirectoryListing', function ($scope, $http) {
 
     // Send the path
     socket.onopen = function () {
-        socket.send($scope.path)
+        socket.send($scope.path+"\n")
     }
 
     // Listen for updates

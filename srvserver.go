@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"sort"
 
 	"code.google.com/p/go.net/websocket"
@@ -76,8 +77,13 @@ func (s SrvServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (s SrvServer) wsHandler(ws *websocket.Conn) {
 	// Wait for the path
-	var path string
-	fmt.Fscan(ws, &s)
+	var _path string
+	fmt.Fscanln(ws, &_path)
+
+	path, err := url.QueryUnescape(_path)
+	if err != nil {
+		panic(err)
+	}
 
 	// Send dir
 	s.writeDirectory(ws, path)
@@ -89,7 +95,7 @@ func (s SrvServer) wsHandler(ws *websocket.Conn) {
 	}
 	defer watcher.Close()
 
-	err = watcher.Add(path)
+	err = watcher.Add("." + path)
 	if err != nil {
 		panic(err)
 	}
