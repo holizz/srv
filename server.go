@@ -15,14 +15,14 @@ import (
 	"gopkg.in/fsnotify.v1"
 )
 
-type SrvServer struct {
+type Server struct {
 	dir        http.Dir
 	fileServer http.Handler
 	html       string
 	js         string
 }
 
-func NewSrvServer(dir http.Dir) SrvServer {
+func NewServer(dir http.Dir) Server {
 	assets := rice.MustFindBox("assets")
 
 	html, err := assets.String("index.html")
@@ -35,7 +35,7 @@ func NewSrvServer(dir http.Dir) SrvServer {
 		panic(err)
 	}
 
-	s := SrvServer{
+	s := Server{
 		dir:        dir,
 		fileServer: http.FileServer(dir),
 		html:       string(html),
@@ -45,7 +45,7 @@ func NewSrvServer(dir http.Dir) SrvServer {
 	return s
 }
 
-func (s SrvServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (s Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "/_srv/app.js" {
 		w.Header()["Content-Type"] = []string{"application/javascript; charset=utf-8"}
 		io.WriteString(w, s.js)
@@ -75,7 +75,7 @@ func (s SrvServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s SrvServer) wsHandler(ws *websocket.Conn) {
+func (s Server) wsHandler(ws *websocket.Conn) {
 	// Wait for the path
 	var _path string
 	fmt.Fscanln(ws, &_path)
@@ -110,7 +110,7 @@ func (s SrvServer) wsHandler(ws *websocket.Conn) {
 	}
 }
 
-func (s SrvServer) writeDirectory(w io.Writer, path string) {
+func (s Server) writeDirectory(w io.Writer, path string) {
 	file, err := s.dir.Open(path)
 	if err != nil {
 		panic(err)
