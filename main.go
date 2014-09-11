@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"code.google.com/p/go.net/websocket"
 )
@@ -18,5 +19,8 @@ func main() {
 
 	http.Handle("/", s)
 	http.Handle("/_srv/api", websocket.Handler(s.wsHandler))
+
+	fmt.Fprintf(os.Stderr, "Listening on 0.0.0.0:%d\n", *port)
+
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), nil))
 }
