@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
+	"strings"
 
 	"code.google.com/p/go.net/websocket"
 
@@ -66,7 +67,18 @@ func (s Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if info.IsDir() {
-		w.Header()["Content-Type"] = []string{"text/html; charset=utf-8"}
+		// Redirect /dir to /dir/
+		if !strings.HasSuffix(r.URL.Path, "/") {
+			w.Header()["Location"] = []string{
+				r.URL.Path + "/",
+			}
+			w.WriteHeader(http.StatusFound)
+			return
+		}
+
+		w.Header()["Content-Type"] = []string{
+			"text/html; charset=utf-8",
+		}
 		io.WriteString(w, s.html)
 		return
 	} else {
