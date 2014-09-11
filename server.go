@@ -24,14 +24,14 @@ type Server struct {
 }
 
 func NewServer(dir http.Dir) Server {
-	assets := rice.MustFindBox("assets")
+	build := rice.MustFindBox("build")
 
-	html, err := assets.String("index.html")
+	html, err := build.String("index.html")
 	if err != nil {
 		panic(err)
 	}
 
-	js, err := assets.String("app.js")
+	js, err := build.String("app.js")
 	if err != nil {
 		panic(err)
 	}
