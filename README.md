@@ -1,4 +1,4 @@
-= srv
+# srv
 
 A simple replacement for "python2 -m SimpleHTTPServer" but with concurrency and WebSocket-based auto-refresh.
 
