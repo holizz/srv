@@ -1,9 +1,12 @@
 <!doctype html>
-<html ng-app="directory">
+<html ng-app="directory" ng-controller="DirectoryListing">
   <head>
-    <title>Directory listing</title>
+    <title>Directory listing for {{path}}</title>
   </head>
-  <body ng-controller="DirectoryListing">
+  <body>
+
+    <h1>Directory listing for {{path}}</h1>
+
     <ul>
       <li ng-repeat="file in files">
         <a href="{{path}}{{file.path}}">{{file.path}}</a>
