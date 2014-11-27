@@ -151,12 +151,7 @@ func (s Server) writeDirectory(w io.Writer, path string) {
 
 	sort.Sort(ByPath(outputFiles))
 
-	bytes, err := json.Marshal(outputFiles)
-	if err != nil {
-		panic(err)
-	}
-
-	_, err = io.WriteString(w, string(bytes))
+	err = json.NewEncoder(w).Encode(outputFiles)
 	if err != nil {
 		panic(err)
 	}
