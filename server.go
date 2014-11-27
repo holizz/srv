@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"sort"
 	"strings"
 
@@ -141,7 +142,7 @@ func (s Server) writeDirectory(w io.Writer, path string) error {
 		return fmt.Errorf("oh no")
 	}
 
-	files, err := file.Readdir(999) //TODO: 999 is too small
+	files, err := readAllFiles(file)
 	if err != nil {
 		return err
 	}
@@ -163,4 +164,17 @@ func (s Server) writeDirectory(w io.Writer, path string) error {
 	}
 
 	return nil
+}
+
+func readAllFiles(file http.File) ([]os.FileInfo, error) {
+	files := []os.FileInfo{}
+	for {
+		more, err := file.Readdir(100)
+		if err == io.EOF {
+			return files, nil
+		} else if err != nil {
+			return nil, err
+		}
+		files = append(files, more...)
+	}
 }
