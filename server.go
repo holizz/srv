@@ -11,7 +11,6 @@ import (
 
 	"code.google.com/p/go.net/websocket"
 
-	"github.com/GeertJohan/go.rice"
 	"github.com/dustin/go-humanize"
 	"gopkg.in/fsnotify.v1"
 )
@@ -24,14 +23,12 @@ type Server struct {
 }
 
 func NewServer(dir http.Dir) Server {
-	build := rice.MustFindBox("build")
-
-	html, err := build.String("index.html")
+	html, err := Asset("build/index.html")
 	if err != nil {
 		panic(err)
 	}
 
-	js, err := build.String("app.js")
+	js, err := Asset("build/app.js")
 	if err != nil {
 		panic(err)
 	}
