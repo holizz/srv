@@ -20,4 +20,9 @@ directory.controller('DirectoryListing', function ($scope, $http) {
         $scope.files = JSON.parse(event.data)
         $scope.$apply()
     }
+
+    // "uh oh"
+    socket.onclose = function (event) {
+        alert("uh oh")
+    }
 })

@@ -95,7 +95,10 @@ func (s Server) wsHandler(ws *websocket.Conn) {
 	}
 
 	// Send dir
-	s.writeDirectory(ws, path)
+	err = s.writeDirectory(ws, path)
+	if err != nil {
+		return
+	}
 
 	// Send dir whenever a file is modified
 	watcher, err := fsnotify.NewWatcher()
@@ -112,32 +115,35 @@ func (s Server) wsHandler(ws *websocket.Conn) {
 	for {
 		select {
 		case <-watcher.Events:
-			s.writeDirectory(ws, path)
+			err := s.writeDirectory(ws, path)
+			if err != nil {
+				return
+			}
 		case err := <-watcher.Errors:
 			panic(err)
 		}
 	}
 }
 
-func (s Server) writeDirectory(w io.Writer, path string) {
+func (s Server) writeDirectory(w io.Writer, path string) error {
 	file, err := s.dir.Open(path)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	defer file.Close()
 
 	info, err := file.Stat()
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	if !info.IsDir() {
-		panic(fmt.Errorf("oh no"))
+		return fmt.Errorf("oh no")
 	}
 
 	files, err := file.Readdir(999) //TODO: 999 is too small
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	outputFiles := []File{}
@@ -153,6 +159,8 @@ func (s Server) writeDirectory(w io.Writer, path string) {
 
 	err = json.NewEncoder(w).Encode(outputFiles)
 	if err != nil {
-		panic(err)
+		return err
 	}
+
+	return nil
 }
