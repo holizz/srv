@@ -1,6 +1,8 @@
 var directory = angular.module('directory', [])
 
 directory.controller('DirectoryListing', function ($scope, $http) {
+    $scope.error = false
+
     $scope.path = document.location.pathname
     if (!$scope.path.match(/\/$/)) {
         $scope.path += '/'
@@ -23,6 +25,7 @@ directory.controller('DirectoryListing', function ($scope, $http) {
 
     // "uh oh"
     socket.onclose = function (event) {
-        alert("uh oh")
+        $scope.error = true
+        $scope.$apply()
     }
 })
