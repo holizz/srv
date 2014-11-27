@@ -1,5 +1,10 @@
 package main
 
+//go:generate mkdir -p build
+//go:generate sh -c "cat assets/angular.min.js assets/angular-route.min.js assets/app.js > build/app.js"
+//go:generate cp assets/index.html build/index.html
+//go:generate go-bindata build/
+
 import (
 	"flag"
 	"fmt"
