@@ -20,7 +20,7 @@ func main() {
 	dir := flag.String("d", ".", "directory to serve")
 	flag.Parse()
 
-	s := NewServer(http.Dir(*dir))
+	s := NewServer(*dir)
 
 	http.Handle("/", s)
 	http.Handle("/_srv/api", websocket.Handler(s.wsHandler))

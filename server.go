@@ -18,12 +18,13 @@ import (
 
 type Server struct {
 	dir        http.Dir
+	dirString  string
 	fileServer http.Handler
 	html       string
 	js         string
 }
 
-func NewServer(dir http.Dir) Server {
+func NewServer(dir string) Server {
 	html, err := Asset("build/index.html")
 	if err != nil {
 		panic(err)
@@ -34,9 +35,12 @@ func NewServer(dir http.Dir) Server {
 		panic(err)
 	}
 
+	httpDir := http.Dir(dir)
+
 	s := Server{
-		dir:        dir,
-		fileServer: http.FileServer(dir),
+		dir:        httpDir,
+		dirString:  dir,
+		fileServer: http.FileServer(httpDir),
 		html:       string(html),
 		js:         string(js),
 	}
@@ -108,7 +112,7 @@ func (s Server) wsHandler(ws *websocket.Conn) {
 	}
 	defer watcher.Close()
 
-	err = watcher.Add("." + path)
+	err = watcher.Add(s.dirString + path)
 	if err != nil {
 		panic(err)
 	}
