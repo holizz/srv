@@ -9,7 +9,7 @@ import (
 	"sort"
 	"strings"
 
-	"code.google.com/p/go.net/websocket"
+	"golang.org/x/net/websocket"
 
 	"github.com/dustin/go-humanize"
 	"gopkg.in/fsnotify.v1"
