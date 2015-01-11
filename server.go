@@ -1,11 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
 	"os"
 	"sort"
 	"strings"
@@ -91,13 +91,14 @@ func (s Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (s Server) wsHandler(ws *websocket.Conn) {
 	// Wait for the path
-	var _path string
-	fmt.Fscanln(ws, &_path)
+	reader := bufio.NewReader(ws)
 
-	path, err := url.QueryUnescape(_path)
+	_path, _, err := reader.ReadLine()
 	if err != nil {
 		panic(err)
 	}
+
+	path := string(_path)
 
 	// Send dir
 	err = s.writeDirectory(ws, path)

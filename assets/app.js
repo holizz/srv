@@ -3,7 +3,7 @@ var directory = angular.module('directory', [])
 directory.controller('DirectoryListing', function ($scope, $http) {
     $scope.error = true
 
-    $scope.path = document.location.pathname
+    $scope.path = decodeURI(document.location.pathname)
     if (!$scope.path.match(/\/$/)) {
         $scope.path += '/'
     }
